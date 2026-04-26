@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abdelrhman Atef — Full-Stack Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-main: #030712;
+    --bg-card: rgba(17, 24, 39, 0.4);
+    --text-main: #f9fafb;
+    --text-sec: #9ca3af;
+    --accent-1: #3b82f6; /* Blue */
+    --accent-2: #8b5cf6; /* Purple */
+    --accent-3: #ec4899; /* Pink */
+    --gradient: linear-gradient(135deg, var(--accent-1), var(--accent-2), var(--accent-3));
+    --gradient-hover: linear-gradient(135deg, var(--accent-2), var(--accent-3), var(--accent-1));
+    --border-color: rgba(255, 255, 255, 0.1);
+    --font-sans: 'Outfit', sans-serif;
+    --font-mono: 'Fira Code', monospace;
+  }
+  
+  /* Reset & Base */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: var(--font-sans);
+    line-height: 1.7;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Animated Background Elements */
+  .bg-wrapper { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+  .orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.3; animation: float 15s infinite alternate ease-in-out; }
+  .orb-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: var(--accent-2); }
+  .orb-2 { bottom: -10%; right: -10%; width: 40vw; height: 40vw; background: var(--accent-1); animation-delay: -5s; }
+  .orb-3 { top: 40%; left: 60%; width: 30vw; height: 30vw; background: var(--accent-3); animation-delay: -10s; }
+  
+  @keyframes float {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(5%, 5%) scale(1.1); }
+  }
+
+  /* Grid Overlay */
+  body::before {
+    content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    mask-image: radial-gradient(ellipse at center, black 0%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 80%);
+  }
+
+  /* Typography Utilities */
+  h1, h2, h3, h4 { line-height: 1.2; }
+  .gradient-text {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+  }
+  
+  /* Navbar */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    padding: 20px 5%; display: flex; justify-content: space-between; align-items: center;
+    background: rgba(3, 7, 18, 0.5);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-color);
+    transition: padding 0.3s ease;
+  }
+  nav.scrolled { padding: 15px 5%; }
+  .logo { font-size: 24px; font-weight: 800; text-decoration: none; color: var(--text-main); letter-spacing: -0.5px; }
+  .logo span { color: var(--accent-1); }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a {
+    text-decoration: none; color: var(--text-sec); font-size: 14px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1.5px; transition: color 0.3s;
+    position: relative;
+    font-family: var(--font-mono);
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: -6px; left: 0; width: 0; height: 2px;
+    background: var(--gradient); transition: width 0.3s ease;
+  }
+  .nav-links a:hover, .nav-links a.active { color: var(--text-main); }
+  .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    padding: 16px 36px; border-radius: 50px; font-weight: 600; text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 15px; cursor: pointer; letter-spacing: 0.5px;
+    position: relative; overflow: hidden;
+  }
+  .btn::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--gradient-hover); opacity: 0; transition: opacity 0.3s; z-index: -1;
+  }
+  .btn-primary {
+    background: var(--gradient); color: white; border: none; z-index: 1;
+    box-shadow: 0 10px 25px -10px var(--accent-2);
+  }
+  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 20px 35px -10px var(--accent-3); }
+  .btn-primary:hover::before { opacity: 1; }
+  .btn-secondary {
+    background: transparent; color: var(--text-main); z-index: 1;
+    border: 1px solid var(--border-color);
+  }
+  .btn-secondary:hover {
+    border-color: var(--accent-1); background: rgba(59, 130, 246, 0.1);
+    transform: translateY(-3px);
+  }
+
+  /* Section Layouts */
+  section { padding: 140px 5%; max-width: 1200px; margin: 0 auto; position: relative; }
+  .section-header { margin-bottom: 80px; }
+  .section-label {
+    font-family: var(--font-mono); color: var(--accent-1); font-size: 14px;
+    text-transform: uppercase; letter-spacing: 3px; margin-bottom: 15px;
+    display: flex; align-items: center; gap: 15px;
+  }
+  .section-label::before { content: ''; width: 40px; height: 1px; background: var(--accent-1); }
+  .section-title { font-size: clamp(36px, 5vw, 56px); font-weight: 800; }
+
+  /* Glass Card */
+  .glass-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color);
+    border-radius: 24px; padding: 40px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative; overflow: hidden;
+  }
+  .glass-card::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.05), transparent 70%);
+  }
+  .glass-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(255,255,255,0.2);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.4), 0 0 20px rgba(139, 92, 246, 0.2);
+  }
+
+  /* Hero Section */
+  #hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding-top: 100px; }
+  .hero-eyebrow { font-family: var(--font-mono); color: var(--accent-1); margin-bottom: 24px; font-size: 16px; letter-spacing: 2px; text-transform: uppercase; }
+  .hero-title { font-size: clamp(50px, 8vw, 100px); font-weight: 800; letter-spacing: -2px; margin-bottom: 20px; line-height: 1; }
+  .hero-tagline { font-family: var(--font-mono); font-size: clamp(16px, 2.5vw, 24px); color: var(--text-sec); margin-bottom: 40px; height: 35px; display: flex; align-items: center; }
+  .type-cursor { display: inline-block; width: 10px; height: 24px; background: var(--accent-1); margin-left: 5px; animation: blink 1s step-end infinite; }
+  .hero-desc { font-size: 18px; color: var(--text-sec); max-width: 650px; margin-bottom: 50px; line-height: 1.8; }
+  .hero-desc strong { color: var(--text-main); font-weight: 600; }
+  .btn-group { display: flex; gap: 20px; flex-wrap: wrap; }
+  .hero-location { position: absolute; bottom: 50px; right: 5%; font-family: var(--font-mono); font-size: 13px; color: var(--text-sec); letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
+  .hero-location::before { content: ''; width: 8px; height: 8px; background: var(--accent-1); border-radius: 50%; box-shadow: 0 0 10px var(--accent-1); animation: pulse 2s infinite; }
+
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } }
+
+  /* About */
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+  .about-content p { font-size: 17px; color: var(--text-sec); margin-bottom: 24px; }
+  .about-content strong { color: var(--text-main); font-weight: 600; }
+  .stats-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+  .stat-card { text-align: center; padding: 40px 20px; display: flex; flex-direction: column; justify-content: center; }
+  .stat-num { font-size: 56px; font-weight: 800; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; margin-bottom: 10px; }
+  .stat-label { font-family: var(--font-mono); font-size: 13px; color: var(--text-sec); text-transform: uppercase; letter-spacing: 1.5px; }
+
+  /* Skills */
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+  .skill-group { padding: 35px; }
+  .skill-title { font-family: var(--font-mono); font-size: 16px; color: var(--accent-2); margin-bottom: 25px; display: flex; align-items: center; gap: 15px; }
+  .skill-title::after { content: ''; flex: 1; height: 1px; background: var(--border-color); }
+  .tags { display: flex; flex-wrap: wrap; gap: 12px; }
+  .tag {
+    background: rgba(255,255,255,0.02); border: 1px solid var(--border-color);
+    padding: 10px 18px; border-radius: 30px; font-size: 14px; font-weight: 500; color: var(--text-sec);
+    transition: all 0.3s; cursor: default;
+  }
+  .tag:hover { border-color: var(--accent-1); color: var(--text-main); background: rgba(59, 130, 246, 0.1); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+
+  /* Projects */
+  .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 40px; }
+  .project-card { display: flex; flex-direction: column; height: 100%; padding: 45px; }
+  .project-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; }
+  .p-meta { font-family: var(--font-mono); font-size: 13px; color: var(--accent-3); }
+  .p-title { font-size: 32px; font-weight: 700; margin-bottom: 20px; line-height: 1.3; }
+  .p-desc { color: var(--text-sec); font-size: 16px; flex-grow: 1; margin-bottom: 30px; line-height: 1.8; }
+  .p-stack { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 35px; }
+  .p-stack span { font-family: var(--font-mono); font-size: 12px; padding: 6px 14px; background: rgba(139, 92, 246, 0.1); color: var(--accent-2); border-radius: 6px; border: 1px solid rgba(139, 92, 246, 0.2); }
+  .p-link { font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--text-main); text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: color 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+  .p-link:hover { color: var(--accent-1); }
+  .p-link svg { width: 18px; height: 18px; transition: transform 0.3s; }
+  .p-link:hover svg { transform: translate(4px, -4px); }
+
+  /* Experience Timeline */
+  .timeline { position: relative; max-width: 900px; margin: 0 auto; }
+  .timeline::before { content: ''; position: absolute; left: 24px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--accent-1), var(--accent-3)); opacity: 0.3; }
+  .t-item { position: relative; padding-left: 70px; margin-bottom: 60px; }
+  .t-item:last-child { margin-bottom: 0; }
+  .t-dot { position: absolute; left: 15px; top: 5px; width: 20px; height: 20px; border-radius: 50%; background: var(--bg-main); border: 4px solid var(--accent-1); box-shadow: 0 0 15px var(--accent-1); z-index: 1; }
+  .t-date { font-family: var(--font-mono); font-size: 14px; color: var(--accent-2); margin-bottom: 10px; display: inline-block; padding: 4px 12px; background: rgba(139, 92, 246, 0.1); border-radius: 20px; }
+  .t-role { font-size: 28px; font-weight: 700; margin-bottom: 5px; color: var(--text-main); }
+  .t-company { font-size: 16px; color: var(--text-sec); margin-bottom: 20px; font-family: var(--font-mono); }
+  .t-desc { list-style: none; }
+  .t-desc li { position: relative; padding-left: 24px; color: var(--text-sec); font-size: 16px; margin-bottom: 12px; line-height: 1.7; }
+  .t-desc li::before { content: '→'; position: absolute; left: 0; color: var(--accent-1); font-family: var(--font-mono); }
+
+  /* Grids for Certs, Edu, Lang */
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+
+  /* Inner Card styles */
+  .c-icon { font-size: 40px; margin-bottom: 20px; }
+  .c-title { font-size: 20px; font-weight: 700; margin-bottom: 10px; line-height: 1.4; }
+  .c-sub { color: var(--text-sec); font-size: 15px; margin-bottom: 15px; }
+  .c-meta { font-family: var(--font-mono); color: var(--accent-1); font-size: 13px; font-weight: 600; }
+
+  .edu-header { display: flex; justify-content: space-between; align-items: flex-start; }
+  .e-year { font-size: 48px; font-weight: 800; color: rgba(255,255,255,0.1); line-height: 1; }
+  
+  .lang-card { text-align: center; }
+  .l-title { font-size: 26px; font-weight: 700; margin-bottom: 12px; }
+  .l-level { color: var(--accent-2); font-family: var(--font-mono); font-size: 14px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+  .l-sub { color: var(--text-sec); font-size: 14px; }
+
+  /* Contact */
+  #contact { text-align: center; max-width: 900px; padding-bottom: 100px; }
+  .contact-title { font-size: clamp(48px, 6vw, 72px); font-weight: 800; margin-bottom: 30px; }
+  .contact-email { 
+    font-size: clamp(28px, 4vw, 48px); font-weight: 700; color: var(--text-main); 
+    text-decoration: none; display: inline-block; margin-bottom: 60px; 
+    transition: all 0.3s; position: relative;
+  }
+  .contact-email::after {
+    content: ''; position: absolute; bottom: -10px; left: 0; width: 100%; height: 3px;
+    background: var(--gradient); transform: scaleX(0); transition: transform 0.3s; transform-origin: right;
+  }
+  .contact-email:hover { color: var(--accent-1); }
+  .contact-email:hover::after { transform: scaleX(1); transform-origin: left; }
+  .socials { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; }
+  .social-btn {
+    padding: 14px 28px; border-radius: 12px; border: 1px solid var(--border-color);
+    color: var(--text-sec); text-decoration: none; font-family: var(--font-mono);
+    font-size: 14px; font-weight: 500; transition: all 0.3s; background: rgba(255,255,255,0.02);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .social-btn:hover { border-color: var(--accent-2); color: var(--text-main); background: rgba(139, 92, 246, 0.1); transform: translateY(-3px); }
+  
+  /* Footer */
+  footer { text-align: center; padding: 40px; border-top: 1px solid var(--border-color); color: var(--text-sec); font-family: var(--font-mono); font-size: 14px; }
+
+  /* Animations */
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  .reveal.active { opacity: 1; transform: translateY(0); }
+
+  /* Responsive */
+  @media (max-width: 992px) {
+    .projects-grid { grid-template-columns: 1fr; }
+    .about-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 768px) {
+    nav { padding: 15px 20px; }
+    nav.scrolled { padding: 10px 20px; }
+    .nav-links { display: none; }
+    section { padding: 100px 20px; }
+    .hero-title { font-size: 48px; }
+    .stats-grid { grid-template-columns: 1fr; }
+    .t-item { padding-left: 40px; }
+    .timeline::before { left: 14px; }
+    .t-dot { left: 5px; width: 16px; height: 16px; }
+    .btn-group { flex-direction: column; width: 100%; }
+    .btn { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-wrapper">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<nav id="navbar">
+  <a href="#" class="logo">A<span>.</span>Atef</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section id="hero">
+  <div class="hero-eyebrow reveal">Full-Stack Developer & System Architect</div>
+  <h1 class="hero-title reveal" style="transition-delay: 0.1s;">Abdelrhman <br><span class="gradient-text">Atef</span></h1>
+  <div class="hero-tagline reveal" style="transition-delay: 0.2s;">
+    <span style="color: var(--text-sec); margin-right: 10px;">$ whoami →</span>
+    <span id="typewriter" style="color: var(--text-main);"></span><span class="type-cursor"></span>
+  </div>
+  <p class="hero-desc reveal" style="transition-delay: 0.3s;">
+    Building scalable web systems from Tbilisi, Georgia.<br>
+    Pursuing medicine while engineering production-ready applications — <strong>because constraints breed creativity.</strong>
+  </p>
+  <div class="btn-group reveal" style="transition-delay: 0.4s;">
+    <a href="#projects" class="btn btn-primary">View Projects</a>
+    <a href="#contact" class="btn btn-secondary">Get in Touch</a>
+  </div>
+  <div class="hero-location reveal" style="transition-delay: 0.5s;">Tbilisi, Georgia</div>
+</section>
+
+<section id="about">
+  <div class="section-header reveal">
+    <div class="section-label">About</div>
+    <h2 class="section-title">Who I am</h2>
+  </div>
+  <div class="about-grid">
+    <div class="about-content glass-card reveal">
+      <p>I'm a <strong>full-stack developer</strong> with deep expertise in modern web technologies and scalable system architecture. I specialize in building robust APIs, complex data models, and production-grade applications that solve real problems.</p>
+      <p>What sets me apart: I'm simultaneously pursuing a <strong>Bachelor of Medicine (MBBS)</strong> at European University Georgia — a dual track that sharpens both my analytical thinking and my ability to operate under pressure.</p>
+      <p>From RBAC systems and geolocation platforms to MongoDB aggregation pipelines and JWT-secured dashboards — I build things that <strong>work in production</strong>, not just in demos.</p>
+    </div>
+    <div class="stats-grid reveal" style="transition-delay: 0.2s;">
+      <div class="stat-card glass-card">
+        <div class="stat-num">2+</div>
+        <div class="stat-label">Production Projects</div>
+      </div>
+      <div class="stat-card glass-card">
+        <div class="stat-num" style="font-size: 36px; display: flex; align-items: center; justify-content: center; height: 56px;">Meta</div>
+        <div class="stat-label">Back-End Dev Certified</div>
+      </div>
+      <div class="stat-card glass-card">
+        <div class="stat-num">3</div>
+        <div class="stat-label">Languages Spoken</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="section-header reveal">
+    <div class="section-label">Skills</div>
+    <h2 class="section-title">Technical Stack</h2>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-group glass-card reveal" style="transition-delay: 0.1s;">
+      <div class="skill-title">Languages</div>
+      <div class="tags">
+        <span class="tag">JavaScript</span><span class="tag">TypeScript</span><span class="tag">C/C++</span>
+        <span class="tag">Python</span><span class="tag">SQL</span><span class="tag">PHP</span>
+      </div>
+    </div>
+    <div class="skill-group glass-card reveal" style="transition-delay: 0.2s;">
+      <div class="skill-title">Frameworks</div>
+      <div class="tags">
+        <span class="tag">Node.js</span><span class="tag">Express.js</span><span class="tag">NestJS</span>
+        <span class="tag">Next.js</span><span class="tag">React</span><span class="tag">FastAPI</span><span class="tag">Tailwind</span>
+      </div>
+    </div>
+    <div class="skill-group glass-card reveal" style="transition-delay: 0.3s;">
+      <div class="skill-title">Databases & Infra</div>
+      <div class="tags">
+        <span class="tag">PostgreSQL</span><span class="tag">MongoDB</span><span class="tag">MySQL</span>
+        <span class="tag">PostGIS</span><span class="tag">Supabase</span><span class="tag">GCP</span><span class="tag">Docker</span>
+      </div>
+    </div>
+    <div class="skill-group glass-card reveal" style="transition-delay: 0.4s;">
+      <div class="skill-title">Libraries & Tools</div>
+      <div class="tags">
+        <span class="tag">JWT</span><span class="tag">Mongoose</span><span class="tag">Bcrypt</span>
+        <span class="tag">Nodemailer</span><span class="tag">React Leaflet</span><span class="tag">Git</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="section-header reveal">
+    <div class="section-label">Projects</div>
+    <h2 class="section-title">Selected Work</h2>
+  </div>
+  <div class="projects-grid">
+    <div class="project-card glass-card reveal">
+      <div class="project-header">
+        <div class="p-meta">01 // Mar 2026 → Present</div>
+      </div>
+      <h3 class="p-title">HalalMap Georgia</h3>
+      <div class="p-stack">
+        <span>Next.js</span><span>Node.js</span><span>PostgreSQL</span><span>PostGIS</span><span>TypeScript</span>
+      </div>
+      <p class="p-desc">Geolocation platform for Muslims in Georgia to discover halal restaurants and mosques. Built with OpenStreetMap and radius-based distance filtering. Features a JWT-secured admin dashboard enabling verified businesses to manage listings and certification status.</p>
+      <a href="https://github.com/Abdoxrs" target="_blank" class="p-link">
+        View on GitHub
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+      </a>
+    </div>
+    <div class="project-card glass-card reveal" style="transition-delay: 0.2s;">
+      <div class="project-header">
+        <div class="p-meta">02 // Dec 2025 → Jan 2026</div>
+      </div>
+      <h3 class="p-title">GO Company System</h3>
+      <div class="p-stack">
+        <span>Node.js</span><span>Express</span><span>MongoDB</span><span>JWT</span><span>RBAC</span>
+      </div>
+      <p class="p-desc">RESTful API with role-based access control and JWT authentication for employee and department management. MongoDB aggregation pipelines for real-time supervisor analytics. Cascading deletes and referential integrity checks ensure data consistency across collections.</p>
+      <a href="https://github.com/Abdoxrs" target="_blank" class="p-link">
+        View on GitHub
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="section-header reveal">
+    <div class="section-label">Experience</div>
+    <h2 class="section-title">Work & Contributions</h2>
+  </div>
+  <div class="timeline">
+    <div class="t-item reveal">
+      <div class="t-dot"></div>
+      <div class="t-date">Nov 2025 → Present</div>
+      <h3 class="t-role">Co-Founder & Team Lead</h3>
+      <div class="t-company">Stealth Startup Project · Remote</div>
+      <ul class="t-desc">
+        <li>Leading a development team to architect and deliver a scalable software solution from conception to deployment.</li>
+        <li>Responsible for technical decision-making, system design, and team coordination across the full development lifecycle.</li>
+      </ul>
+    </div>
+    <div class="t-item reveal">
+      <div class="t-dot"></div>
+      <div class="t-date">Dec 2025</div>
+      <h3 class="t-role">Open Source Contributor</h3>
+      <div class="t-company">CV Builder — GitHub</div>
+      <ul class="t-desc">
+        <li>Implemented comprehensive Arabic localization with full RTL support and cultural customization features.</li>
+        <li>Developed region-specific resume sections enabling Arabic-speaking users to create culturally appropriate CVs.</li>
+        <li>Enhanced accessibility for non-English speakers globally through full Arabic language integration.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="certs">
+  <div class="section-header reveal">
+    <div class="section-label">Certifications</div>
+    <h2 class="section-title">Credentials</h2>
+  </div>
+  <div class="grid-2">
+    <div class="cert-card glass-card reveal">
+      <div class="c-icon">🏅</div>
+      <h3 class="c-title">Meta Back-End Developer</h3>
+      <div class="c-sub">Professional Certificate · Coursera</div>
+      <div class="c-meta">Issued 2025</div>
+    </div>
+    <div class="cert-card glass-card reveal" style="transition-delay: 0.2s;">
+      <div class="c-icon">⚡</div>
+      <h3 class="c-title">JavaScript Algorithms</h3>
+      <div class="c-sub">Data Structures · freeCodeCamp</div>
+      <div class="c-meta">Issued 2025</div>
+    </div>
+  </div>
+</section>
+
+<section id="education">
+  <div class="section-header reveal">
+    <div class="section-label">Education</div>
+    <h2 class="section-title">Academic Background</h2>
+  </div>
+  <div class="edu-card glass-card reveal">
+    <div class="edu-header">
+      <div>
+        <h3 class="c-title" style="font-size: 32px; margin-bottom: 15px;">Bachelor of Medicine (MBBS)</h3>
+        <div class="c-sub" style="font-size: 18px; color: var(--text-main);">European University Georgia</div>
+        <div class="c-meta">Tbilisi, Georgia · Oct 2025 – June 2031</div>
+      </div>
+      <div class="e-year">2031</div>
+    </div>
+  </div>
+</section>
+
+<section id="languages">
+  <div class="section-header reveal">
+    <div class="section-label">Languages</div>
+    <h2 class="section-title">Communication</h2>
+  </div>
+  <div class="grid-3">
+    <div class="lang-card glass-card reveal">
+      <div class="l-title">Arabic</div>
+      <div class="l-level">Native</div>
+      <div class="l-sub">Mother tongue</div>
+    </div>
+    <div class="lang-card glass-card reveal" style="transition-delay: 0.2s;">
+      <div class="l-title">English</div>
+      <div class="l-level">Fluent</div>
+      <div class="l-sub">C1 Level</div>
+    </div>
+    <div class="lang-card glass-card reveal" style="transition-delay: 0.4s;">
+      <div class="l-title">Georgian / Russian</div>
+      <div class="l-level">Elementary</div>
+      <div class="l-sub">A2 Level</div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="section-label reveal" style="justify-content: center; margin-bottom: 30px;">Contact</div>
+  <h2 class="contact-title reveal"><span class="gradient-text">Let's Build</span> Something</h2>
+  <a href="mailto:abdoxrs223@gmail.com" class="contact-email reveal">abdoxrs223@gmail.com</a>
+  <div class="socials reveal">
+    <a href="https://linkedin.com/in/abdelrhman-atef-b55165377" target="_blank" class="social-btn">
+      LinkedIn
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+    </a>
+    <a href="https://github.com/Abdoxrs" target="_blank" class="social-btn">
+      GitHub
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+    </a>
+    <a href="tel:+995579352516" class="social-btn">
+      📞 +995 579 352 516
+    </a>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Abdelrhman Atef — Built with precision.</p>
+</footer>
+
+<script>
+  // Typewriter Effect
+  const phrases = ['Full-Stack Developer', 'Backend Engineer', 'System Architect', 'Open Source Contributor', 'Medical Student & Builder'];
+  let phraseIdx = 0, charIdx = 0, isDeleting = false;
+  const typeText = document.getElementById('typewriter');
+  
+  function type() {
+    const current = phrases[phraseIdx];
+    if (isDeleting) {
+      typeText.textContent = current.substring(0, charIdx - 1);
+      charIdx--;
+    } else {
+      typeText.textContent = current.substring(0, charIdx + 1);
+      charIdx++;
+    }
+    
+    let typeSpeed = isDeleting ? 30 : 70;
+    
+    if (!isDeleting && charIdx === current.length) {
+      typeSpeed = 2000;
+      isDeleting = true;
+    } else if (isDeleting && charIdx === 0) {
+      isDeleting = false;
+      phraseIdx = (phraseIdx + 1) % phrases.length;
+      typeSpeed = 500;
+    }
+    
+    setTimeout(type, typeSpeed);
+  }
+  
+  setTimeout(type, 1000);
+
+  // Scroll Reveal Animations
+  const reveals = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('active');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+  
+  reveals.forEach(reveal => revealObserver.observe(reveal));
+
+  // Navbar Scroll Effect & Active Links
+  const navbar = document.getElementById('navbar');
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
+
+    let current = '';
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      if (scrollY >= sectionTop - 200) {
+        current = section.getAttribute('id');
+      }
+    });
+
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === `#${current}`) {
+        link.classList.add('active');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
