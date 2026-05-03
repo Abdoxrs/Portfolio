@@ -63,6 +63,7 @@
   .gradient-text {
     background: var(--gradient);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     display: inline-block;
   }
@@ -171,7 +172,7 @@
   .about-content strong { color: var(--text-main); font-weight: 600; }
   .stats-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
   .stat-card { text-align: center; padding: 40px 20px; display: flex; flex-direction: column; justify-content: center; }
-  .stat-num { font-size: 56px; font-weight: 800; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; margin-bottom: 10px; }
+  .stat-num { font-size: 56px; font-weight: 800; background: var(--gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; margin-bottom: 10px; }
   .stat-label { font-family: var(--font-mono); font-size: 13px; color: var(--text-sec); text-transform: uppercase; letter-spacing: 1.5px; }
 
   /* Skills */
